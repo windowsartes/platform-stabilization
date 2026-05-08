@@ -1,0 +1,21 @@
+params:
+  M: 1
+  J: 1
+  L1: 0.5
+  L2: [0.7, 0.65, 0.6, 0.55, 0.5, 0.45]
+  alpha_1: 0.6
+  alpha_2: 0.6
+estimates:
+  M_upper: 1.1
+  F_upper: 20
+  J_upper: 1.1
+  L_lower: 0.9
+  omega_upper: 0.1
+  eta: 0.5
+  alpha_max: "np.pi / 4"
+  theta_max: "np.pi / 5"
+constants:
+  g: 9.81
+chi_function: "tanh"
+n_trials: 1000
+t_max: 1000
