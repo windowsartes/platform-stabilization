@@ -1,8 +1,28 @@
+from dataclasses import asdict, dataclass
+
 import numpy as np
 from scipy.integrate import solve_ivp
 
 from platform_stabilization.constants import g
 from platform_stabilization.chi_functions import ChiFunction
+
+
+@dataclass
+class Parameters:
+    M: float
+    J: float
+    L_1: float
+    L_2: float
+    alpha_1: float
+    alpha_2: float
+
+
+@dataclass
+class InitialState:
+    theta: float
+    d_theta: float
+    y: float
+    d_y: float
 
 
 class DefaultSystem:
