@@ -1,0 +1,28 @@
+n_objects: 1000
+output_dir: ./saved_objects
+parameters:
+  M:
+    max: 2
+    min: 0.5
+  J:
+    max: 2
+    min: 0.5
+  L_1:
+    max: 2
+    min: 0.5
+  L_2:
+    max: 2
+    min: 0.5
+  alpha_1:
+    max: "np.pi / 6"
+    min: 0
+  alpha_2:
+    max: "np.pi / 6"
+    min: 0
+initial_conditions:
+  theta:
+    max: "np.pi / 5"
+    min: 0
+  h:
+    max: 10
+    min: 0
