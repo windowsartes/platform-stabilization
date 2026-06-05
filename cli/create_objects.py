@@ -22,7 +22,6 @@ class EstimatesPair(BaseModel):
         if isinstance(self.max, str):
             self.max = eval(self.max)
 
-
 class Parameters_(BaseModel):
     M: EstimatesPair
     J: EstimatesPair
@@ -31,11 +30,9 @@ class Parameters_(BaseModel):
     alpha_1: EstimatesPair
     alpha_2: EstimatesPair
 
-
 class InitialConditions_(BaseModel):
     theta: EstimatesPair
     h: EstimatesPair
-
 
 class ConfigModel(BaseModel):
     n_objects: int
@@ -75,6 +72,9 @@ def main(config_path: str):
                     max_min_pairs["min"],
                     max_min_pairs["max"],
                 )
+
+        object_as_dict["parameters"]["L_1"], object_as_dict["parameters"]["L_2"] = \
+            sorted([object_as_dict["parameters"]["L_1"], object_as_dict["parameters"]["L_2"]])
 
         object_as_dict["initial_conditions"]["d_theta"] = 0
         object_as_dict["initial_conditions"]["d_h"] = 0

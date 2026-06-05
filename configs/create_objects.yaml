@@ -14,14 +14,14 @@ parameters:
     max: 2
     min: 0.5
   alpha_1:
-    max: "np.pi / 6"
+    max: "np.pi / 10"
     min: 0
   alpha_2:
-    max: "np.pi / 6"
+    max: "np.pi / 10"
     min: 0
 initial_conditions:
   theta:
-    max: "np.pi / 5"
+    max: "np.pi / 10"
     min: 0
   h:
     max: 10
