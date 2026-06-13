@@ -5,6 +5,7 @@ from scipy.integrate import solve_ivp
 
 from platform_stabilization.constants import g
 from platform_stabilization.chi_functions import ChiFunction
+from platform_stabilization.controllers import FirstStageController
 
 
 @dataclass
@@ -25,7 +26,7 @@ class InitialState:
     d_y: float
 
 
-class DefaultSystem:
+class System:
     def __init__(
         self,
         M: float,
@@ -44,10 +45,8 @@ class DefaultSystem:
 
     def simulate(
         self,
-        F_0: float,
-        F_theta: float,
-        mu: float,
-        chi_function: ChiFunction,
+        controller_1: FirstStageController,
+        controller_2: FirstStageController,
         y_0: np.ndarray,
         t_span: tuple[float, float],
         rtol: float = 1e-3,
@@ -58,16 +57,22 @@ class DefaultSystem:
             t: float,
             y: np.ndarray,
         ) -> np.ndarray:
-            F_0_term = F_0 * (self._L2 * np.cos(y[0] + self._alpha_2) - self._L1 * np.cos(y[0] + self._alpha_1))
-            F_theta_term = F_theta * np.sign(y[1] + mu * chi_function.chi(y[0])) * \
-                (self._L2 * np.cos(y[0] + self._alpha_2) + self._L1 * np.cos(y[0] + self._alpha_1))
+            F_1 = controller_1(
+                y[0],
+                t,
+            )
+
+            F_2 = controller_2(
+                y[0],
+                t,
+            )
 
             return np.array(
                 [
                     y[1],
-                    (F_0_term - F_theta_term) / self._J,
+                    (F_2 * self._L2 * np.cos(y[0] + self._alpha_2) - F_1 * self._L1 * np.cos(y[0] + self._alpha_1)) / self._J,
                     y[3],
-                    2 * F_0 / self._M - g,
+                    (F_1 + F_2) / self._M - g,
                 ]
             )
 
