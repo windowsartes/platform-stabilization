@@ -1,4 +1,4 @@
-n_objects: 1000
+n_objects: 10000
 output_dir: ./saved_objects
 parameters:
   M:
@@ -15,14 +15,15 @@ parameters:
     min: 0.5
   alpha_1:
     max: "np.pi / 10"
-    min: 0
+    min: "np.pi / 20"
   alpha_2:
     max: "np.pi / 10"
-    min: 0
+    min: "np.pi / 20"
 initial_conditions:
   theta:
     max: "np.pi / 10"
-    min: 0
-  h:
-    max: 10
-    min: 0
+    min: "np.pi / 20"
+absolute:
+  R_overline: 2.2
+  L_overline: 4.4
+  h_overline: 0.5

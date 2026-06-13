@@ -1,0 +1,15 @@
+
+objects_dir: ./saved_objects
+controllers_dir: ./saved_controllers
+estimates:
+  coefficients:
+    M: 1.1
+    J: 1.1
+    L_underline: 0.9
+    eta: 0.9
+    alpha_max: 1.1
+    theta_overline: [1.1, 1.25, 1.5, 2.0, 3.0]
+  absolute:
+    omega_overline: 18
+    chi_function: "tanh"
+    F_overline: 100.0

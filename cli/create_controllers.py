@@ -31,44 +31,32 @@ class Coefficients_(BaseModel):
         self,
         __context,
     ) -> None:
-        if isinstance(self.M, float):
-            self.M = [self.M]
-        else:
+        if not isinstance(self.M, float):
             self.iterate_over = "M"
 
             return
 
-        if isinstance(self.J, float):
-            self.J = [self.J]
-        else:
+        if not isinstance(self.J, float):
             self.iterate_over = "J"
 
             return
 
-        if isinstance(self.L_underline, float):
-            self.L_underline = [self.L_underline]
-        else:
+        if not isinstance(self.L_underline, float):
             self.iterate_over = "L_underline"
 
             return
 
-        if isinstance(self.eta, float):
-            self.eta = [self.eta]
-        else:
+        if not isinstance(self.eta, float):
             self.iterate_over = "eta"
 
             return
 
-        if isinstance(self.alpha_max, float):
-            self.alpha_max = [self.alpha_max]
-        else:
+        if not isinstance(self.alpha_max, float):
             self.iterate_over = "alpha_max"
 
             return
 
-        if isinstance(self.theta_overline, float):
-            self.theta_overline = [self.theta_overline]
-        else:
+        if not isinstance(self.theta_overline, float):
             self.iterate_over = "theta_overline"
 
             return
@@ -156,8 +144,7 @@ def main(config_path: str) -> None:
                     object_parameters["M"],
                 "J_overline": current_setup_parameters_dict["J"] * \
                     object_parameters["J"],
-                "L_underline": current_setup_parameters_dict["L_underline"] * \
-                    (object_parameters["L_1"] + object_parameters["L_2"]),
+                "L_underline": current_setup_parameters_dict["L_underline"] * object_parameters["L"],
                 "eta": current_setup_parameters_dict["eta"] * \
                     (object_parameters["L_1"] / object_parameters["L_2"]),
                 "alpha_max": current_setup_parameters_dict["alpha_max"] * \
@@ -180,7 +167,12 @@ def main(config_path: str) -> None:
 
             cos_therm = np.cos(current_controller_estimates["theta_overline"] + current_controller_estimates["alpha_max"])
             theta_big = cos_therm / \
-                np.cos(current_controller_estimates["theta_overline"] - current_controller_estimates["alpha_max"])
+                np.cos(
+                    max(
+                        current_controller_estimates["theta_overline"] - current_controller_estimates["alpha_max"],
+                        0,    
+                    ),
+                )
 
             F_0_lower = current_controller_estimates["M_overline"] * g / 2
             F_0_upper = controller_params.absolute.F_overline * \
@@ -197,17 +189,29 @@ def main(config_path: str) -> None:
             second_multiplier = (current_controller_estimates["L_underline"]  * cos_therm) / \
                 (current_controller_estimates["J_overline"] * chi_function.chi_upper * chi_function.chi_dot_upper)
             
-            mu_upper = min(
-                controller_params.absolute.omega_overline / chi_function.chi_upper,
-                np.sqrt(first_multiplier * second_multiplier),
-            )
-            mu_lower = mu_upper * 0.9
+            mu_upper = np.sqrt(first_multiplier * second_multiplier)
+
+            assert mu_upper < controller_params.absolute.omega_overline / chi_function.chi_upper, \
+                f"mu condition failed: {mu_upper} < {controller_params.absolute.omega_overline / chi_function.chi_upper}" + \
+                f"F_0: {F_0}"
+
+            mu_lower = mu_upper * 0.5
             mu = random.uniform(mu_lower, mu_upper)
+
+            sin_therm = np.sin(current_controller_estimates["theta_overline"] + current_controller_estimates["alpha_max"])
+
+            max_arg_1 = 1 / (1 + min(1, current_controller_estimates["eta"]))
+            max_arg_2 = max(1, current_controller_estimates["eta"]) / \
+                (current_controller_estimates["eta"] + max(1, current_controller_estimates["eta"]))
+
+            h_trig = object_config["absolute"]["R_overline"] + object_config["absolute"]["h_overline"] + \
+                object_config["absolute"]["L_overline"] * sin_therm * max(max_arg_1, max_arg_2)
 
             current_controller_parameters = {
                 "F_0": F_0,
                 "F_theta": F_theta,
                 "mu": mu,
+                "h_trig": h_trig,
             }
 
             with open(
