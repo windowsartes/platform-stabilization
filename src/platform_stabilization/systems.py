@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 
 import numpy as np
@@ -8,38 +9,21 @@ from platform_stabilization.chi_functions import ChiFunction
 from platform_stabilization.controllers import FirstStageController
 
 
-@dataclass
-class Parameters:
-    M: float
-    J: float
-    L_1: float
-    L_2: float
-    alpha_1: float
-    alpha_2: float
-
-
-@dataclass
-class InitialState:
-    theta: float
-    d_theta: float
-    y: float
-    d_y: float
-
-
 class System:
     def __init__(
         self,
         M: float,
         J: float,
-        L1: float,
-        L2: float,
+        L_1: float,
+        L_2: float,
         alpha_1: float,
         alpha_2: float,
+        **kwargs,
     ):
         self._M = M
         self._J = J
-        self._L1 = L1
-        self._L2 = L2
+        self._L_1 = L_1
+        self._L_2 = L_2
         self._alpha_1 = alpha_1
         self._alpha_2 = alpha_2
 
@@ -49,6 +33,7 @@ class System:
         controller_2: FirstStageController,
         y_0: np.ndarray,
         t_span: tuple[float, float],
+        early_stopping_criterion: Callable[[float, np.ndarray], float],
         rtol: float = 1e-3,
         atol: float = 1e-4,
         method: str = "RK45",
@@ -70,7 +55,7 @@ class System:
             return np.array(
                 [
                     y[1],
-                    (F_2 * self._L2 * np.cos(y[0] + self._alpha_2) - F_1 * self._L1 * np.cos(y[0] + self._alpha_1)) / self._J,
+                    (F_2 * self._L_2 * np.cos(y[0] + self._alpha_2) - F_1 * self._L_1 * np.cos(y[0] + self._alpha_1)) / self._J,
                     y[3],
                     (F_1 + F_2) / self._M - g,
                 ]
@@ -83,6 +68,7 @@ class System:
             rtol=rtol,
             atol=atol,
             method=method,
+            events=early_stopping_criterion,
         )
 
         return (
