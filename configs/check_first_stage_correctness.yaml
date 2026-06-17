@@ -1,0 +1,4 @@
+results_dir: "./results/first_stage"
+controllers_dir: ./saved_controllers
+objects_dir: ./saved_objects
+theta_epsilon_absolute: 0.001
