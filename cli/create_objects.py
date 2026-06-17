@@ -8,6 +8,7 @@ random.seed(42)
 import numpy as np
 import yaml
 from pydantic import BaseModel
+from tqdm import tqdm
 
 
 class EstimatesPair(BaseModel):
@@ -70,7 +71,7 @@ def main(config_path: str):
     del config_as_dict["n_objects"]
     del config_as_dict["output_dir"]
 
-    for object_index in range(config.n_objects):
+    for object_index in tqdm(range(config.n_objects)):
         object_as_dict = {}
 
         for outer_key in config_as_dict:
