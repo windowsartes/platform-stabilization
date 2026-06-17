@@ -10,6 +10,7 @@ random.seed(42)
 import numpy as np
 import yaml
 from pydantic import BaseModel, Field
+from tqdm import tqdm
 
 from platform_stabilization.chi_functions import ChiFunctionFactory
 from platform_stabilization.constants import g
@@ -127,7 +128,7 @@ def main(config_path: str) -> None:
             exist_ok=False,
         )
 
-        for object_config_file_path in saved_objects:
+        for object_config_file_path in tqdm(saved_objects, desc=f"{label}"):
             with open(
                 object_config_file_path,
                 "r",
@@ -152,6 +153,10 @@ def main(config_path: str) -> None:
                 "theta_overline": current_setup_parameters_dict["theta_overline"] * \
                     object_initial_state["theta"],
             }
+
+            alpha_theta_sum = current_controller_estimates["alpha_max"] + current_controller_estimates["theta_overline"]
+
+            assert alpha_theta_sum < np.pi / 2, f"alpha + theta condition failed: {alpha_theta_sum} < {np.pi / 2}"
 
             with open(
                 os.path.join(
@@ -186,26 +191,26 @@ def main(config_path: str) -> None:
 
             first_multiplier = F_theta - F_0 * ((1 - current_controller_estimates["eta"] * theta_big) / \
                 (1 + current_controller_estimates["eta"] * theta_big))
+
             second_multiplier = (current_controller_estimates["L_underline"]  * cos_therm) / \
                 (current_controller_estimates["J_overline"] * chi_function.chi_upper * chi_function.chi_dot_upper)
             
             mu_upper = np.sqrt(first_multiplier * second_multiplier)
 
             assert mu_upper < controller_params.absolute.omega_overline / chi_function.chi_upper, \
-                f"mu condition failed: {mu_upper} < {controller_params.absolute.omega_overline / chi_function.chi_upper}" + \
-                f"F_0: {F_0}"
+                f"mu condition failed: {mu_upper} < {controller_params.absolute.omega_overline / chi_function.chi_upper}"
 
             mu_lower = mu_upper * 0.5
             mu = random.uniform(mu_lower, mu_upper)
 
-            sin_therm = np.sin(current_controller_estimates["theta_overline"] + current_controller_estimates["alpha_max"])
+            sin_theta = np.sin(current_controller_estimates["theta_overline"] + current_controller_estimates["alpha_max"])
 
             max_arg_1 = 1 / (1 + min(1, current_controller_estimates["eta"]))
             max_arg_2 = max(1, current_controller_estimates["eta"]) / \
                 (current_controller_estimates["eta"] + max(1, current_controller_estimates["eta"]))
 
             h_trig = object_config["absolute"]["R_overline"] + object_config["absolute"]["h_overline"] + \
-                object_config["absolute"]["L_overline"] * sin_therm * max(max_arg_1, max_arg_2)
+                object_config["absolute"]["L_overline"] * sin_theta * max(max_arg_1, max_arg_2)
 
             current_controller_parameters = {
                 "F_0": F_0,
