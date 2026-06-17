@@ -93,7 +93,7 @@ def main(config_path: str):
         alpha_1 = object_as_dict["parameters"]["alpha_1"]
         alpha_2 = object_as_dict["parameters"]["alpha_1"]
 
-        L_contre_angle = np.pi / 2 - (alpha_1 + alpha_2)
+        L_contre_angle = np.pi - (alpha_1 + alpha_2)
         L = np.sqrt(L_1 ** 2 + L_2 ** 2 - 2 * L_1 * L_2 * np.cos(L_contre_angle))
 
         object_as_dict["parameters"]["L"] = L
