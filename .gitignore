@@ -11,7 +11,9 @@ wheels/
 .venv
 
 *.log
+*.ipynb
 
 experiments/
 saved_objects/
 saved_controllers/
+results/
