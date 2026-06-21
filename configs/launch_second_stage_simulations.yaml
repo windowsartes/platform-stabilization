@@ -1,0 +1,4 @@
+saved_objects_dir: ./saved_objects
+saved_controllers_dir: ./saved_controllers
+results_dump_dir: ./results/second_stage
+t_max: 1000
