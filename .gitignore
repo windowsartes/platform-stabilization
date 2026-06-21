@@ -12,6 +12,7 @@ wheels/
 
 *.log
 *.ipynb
+*.png
 
 experiments/
 saved_objects/
