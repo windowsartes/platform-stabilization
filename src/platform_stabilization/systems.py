@@ -1,12 +1,15 @@
 from collections.abc import Callable
 from dataclasses import asdict, dataclass
+from typing import TypeVar
 
 import numpy as np
 from scipy.integrate import solve_ivp
 
 from platform_stabilization.constants import g
-from platform_stabilization.chi_functions import ChiFunction
-from platform_stabilization.controllers import FirstStageController
+from platform_stabilization.controllers import FirstStageController, SecondStageController
+
+
+ControllerType = TypeVar("ControllerType", FirstStageController, SecondStageController)
 
 
 class System:
@@ -29,8 +32,8 @@ class System:
 
     def simulate(
         self,
-        controller_1: FirstStageController,
-        controller_2: FirstStageController,
+        controller_1: ControllerType,
+        controller_2: ControllerType,
         y_0: np.ndarray,
         t_span: tuple[float, float],
         early_stopping_criterion: Callable[[float, np.ndarray], float],
@@ -57,7 +60,7 @@ class System:
                     y[1],
                     (F_2 * self._L_2 * np.cos(y[0] + self._alpha_2) - F_1 * self._L_1 * np.cos(y[0] + self._alpha_1)) / self._J,
                     y[3],
-                    (F_1 + F_2) / self._M - g,
+                    ((F_1 + F_2) / self._M) - g,
                 ]
             )
 
