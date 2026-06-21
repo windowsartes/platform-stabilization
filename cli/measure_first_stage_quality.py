@@ -6,9 +6,7 @@ from glob import glob
 
 import numpy as np
 import yaml
-from joblib import delayed, Parallel
 from pydantic import BaseModel
-from tqdm import tqdm
 
 seed = 42
 random.seed(42)
@@ -47,7 +45,7 @@ def main(config_path: str):
 
         base_model_convergence_time = []
 
-        for t_path in glob(
+        t_pathes = glob(
             os.path.join(
                 config.results_dump_dir,
                 target_estimate_label,
@@ -55,7 +53,10 @@ def main(config_path: str):
                 "**",
                 "t.npy",
             )
-        ):
+        )
+        t_pathes = sorted(t_pathes, key=lambda x: int(x.split("/")[-2]))
+
+        for t_path in t_pathes:
             base_model_convergence_time.append(np.load(t_path)[-1])
 
         base_model_convergence_time = np.array(base_model_convergence_time)
@@ -66,7 +67,7 @@ def main(config_path: str):
 
             concurrent_model_convergence_time = []
 
-            for t_path in glob(
+            t_pathes = glob(
                 os.path.join(
                     config.results_dump_dir,
                     target_estimate_label,
@@ -74,7 +75,10 @@ def main(config_path: str):
                     "**",
                     "t.npy",
                 )
-            ):
+            )
+            t_pathes = sorted(t_pathes, key=lambda x: int(x.split("/")[-2]))
+
+            for t_path in t_pathes:
                 concurrent_model_convergence_time.append(np.load(t_path)[-1])
 
             concurrent_model_convergence_time = np.array(concurrent_model_convergence_time)
