@@ -47,8 +47,8 @@ class SecondStageController(Callable[[float, float], float]):
         self,
         F_theta: float,
         F_0: float,
-        theta_0: float,
         mu: float,
+        theta_0: float,
         i: int,
         chi: Callable[[float], float],
     ):
@@ -78,6 +78,6 @@ class SecondStageController(Callable[[float, float], float]):
         theta_derivative = d_theta - d_t
 
         F = self._F_0 + ((-1) ** (self._i + 1)) * self._F_theta * \
-            np.sign(theta_derivative + self.mu * self._chi(theta_curr))
+            np.sign(theta_derivative + self._mu * self._chi(theta_curr))
 
         return F
