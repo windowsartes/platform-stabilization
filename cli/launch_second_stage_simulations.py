@@ -86,7 +86,7 @@ def process_single_item(
 
     t_span = [0, t_max]
 
-    mu_criterion = make_h_trig_condition()
+    mu_criterion = make_mu_condition()
 
     t, y = system.simulate(
         controller_1,
@@ -94,6 +94,7 @@ def process_single_item(
         y_0,
         t_span,
         mu_criterion,
+        method="BDF",
     )
 
     output_dir = os.path.join(

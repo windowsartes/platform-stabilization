@@ -7,6 +7,7 @@ from glob import glob
 import numpy as np
 import yaml
 from pydantic import BaseModel
+from tqdm import tqdm
 
 seed = 42
 random.seed(42)
@@ -17,6 +18,7 @@ from platform_stabilization.quality_measurement import get_mean_interval, get_wi
 
 class ConfigModel(BaseModel):
     results_dump_dir: str
+    log_file_path: str
 
 
 def load_config_from_yaml(file_path: str) -> ConfigModel:
@@ -29,7 +31,14 @@ def load_config_from_yaml(file_path: str) -> ConfigModel:
 def main(config_path: str):
     config = load_config_from_yaml(config_path)
 
-    for target_estimate_label in os.listdir(config.results_dump_dir):
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        filename=f"{config.log_file_path}",
+        filemode="w"
+    )
+
+    for target_estimate_label in tqdm(os.listdir(config.results_dump_dir)):
         logging.info(f"processing results of {target_estimate_label}")
 
         current_estimate_values = os.listdir(os.path.join(config.results_dump_dir, target_estimate_label))
@@ -94,13 +103,6 @@ def main(config_path: str):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-        filename="first_stage_quality.log",
-        filemode="w"
-    )
-
     argument_parser = ArgumentParser()
 
     argument_parser.add_argument("--config")

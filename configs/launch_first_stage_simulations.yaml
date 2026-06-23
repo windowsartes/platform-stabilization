@@ -1,5 +1,5 @@
 saved_objects_dir: ./saved_objects
 saved_controllers_dir: ./saved_controllers
-results_dump_dir: ./results/first_stage
+results_dump_dir: ./results/first_stage_new_method
 chosen_controllers_subset: ["M", "eta", "alpha_max", "theta_overline"]
-t_max: 10
+t_max: 100

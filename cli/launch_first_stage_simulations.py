@@ -105,6 +105,7 @@ def process_single_item(
         y_0,
         t_span,
         h_trig_criterion,
+        method="RK45w",
     )
 
     output_dir = os.path.join(

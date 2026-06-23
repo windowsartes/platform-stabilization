@@ -1,0 +1,3 @@
+results_dir: "./results/second_stage_new_method"
+theta_epsilon_absolute: 1e-4
+w_overline: 9.3
