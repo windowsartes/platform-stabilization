@@ -1,0 +1,4 @@
+controllers_dir: ./saved_controllers
+results_dir: ./results/second_stage
+parameter_estimate_pairs: [["J", "J_overline"], ["L_underline", "L_underline"]]
+num_permutations: 99
