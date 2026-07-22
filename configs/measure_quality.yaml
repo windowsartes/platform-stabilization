@@ -1,0 +1,2 @@
+results_dump_dir: "./results/first_stage"
+log_file_path: "first_stage_quality.log"
